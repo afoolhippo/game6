@@ -5,52 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>二日酔いロード</title>
 
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
-  >
-
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- TITLE -->
   <div id="titleScreen" class="screen">
-
-    <img
-      src="title.png"
-      alt="二日酔いロード"
-      class="title-image"
-    >
-
-    <div class="start-text">
-      PRESS START BUTTON
-    </div>
-
+    <img src="title.png" alt="二日酔いロード" class="title-image">
+    <div class="start-text">PRESS START BUTTON</div>
   </div>
 
-  <!-- RULE -->
   <div id="ruleScreen" class="screen hidden">
-
     <h2>HOW TO PLAY</h2>
 
     <div class="rule-list">
-
       <div class="rule-block">
-        <img src="drunk.png" alt="player">
-        <p>
-          フラフラ歩く！
-        </p>
+        <img src="drunk.png" alt="">
+        <p>フラフラ歩く！</p>
       </div>
 
       <div class="rule-block">
-        <img src="pole.png" alt="pole">
-        <p>
-          電柱に注意！
-        </p>
+        <img src="pole.png" alt="">
+        <p>電柱に注意！</p>
       </div>
 
       <div class="rule-block">
-        <img src="cat.png" alt="cat">
-        <p>
+        <img src="cat.png" alt="">
+        <p>猫が飛び出す！</p>
+      </div>
+
+      <div class="rule-block">
+        <img src="crow.png" alt="">
+        <p>カラスが飛ぶ！</p>
+      </div>
+
+      <div class="rule-block">
+        <img src="pocari.png" alt="">
+        <p>LIFE 回復！</p>
+      </div>
+
+      <div class="rule-block">
+        <img src="station.png" alt="">
+        <p>駅まで帰れ！</p>
+      </div>
+    </div>
+
+    <div class="rule-note">
+      120秒 生き残れ！
+    </div>
+
+    <div class="start-text">TAP TO START</div>
+  </div>
+
+  <div id="gameScreen" class="screen hidden">
+    <div id="road"></div>
+
+    <div class="top-ui">
+      <div id="life">LIFE ██████████</div>
+      <div id="timer">120</div>
+    </div>
+
+    <img id="player" src="drunk.png" alt="">
+  </div>
+
+  <div id="resultScreen" class="screen hidden">
+    <div id="resultStation">
+      <img src="station.png" alt="">
+    </div>
+
+    <div id="resultTitle">無事生還！</div>
+    <div id="resultText">終電に間に合った…</div>
+
+    <button id="retryButton">もういっかい！</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
 </html>
