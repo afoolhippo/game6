@@ -89,7 +89,6 @@ function gameLoop() {
 }
 
 function updatePlayer() {
-  // 操作は素直に追従。見た目のフラつきはCSSで表現。
   playerX += (targetX - playerX) * 0.14;
 
   playerX = Math.max(getRoadMin(), Math.min(getRoadMax(), playerX));
@@ -132,6 +131,12 @@ function updateObjects() {
       obj.x += Math.sin(Date.now() / 170 + obj.waveOffset) * 1.35;
     }
 
+    if (obj.kind === "cat") {
+      obj.x += Math.sin(Date.now() / 220 + obj.waveOffset) * 0.7;
+    }
+
+    obj.x = Math.max(getRoadMin() - 12, Math.min(getRoadMax() + 12, obj.x));
+
     obj.el.style.left = obj.x + "px";
     obj.el.style.top = obj.y + "px";
 
@@ -152,11 +157,7 @@ function updateObjects() {
       continue;
     }
 
-    if (
-      obj.y > window.innerHeight + 180 ||
-      obj.x < -180 ||
-      obj.x > window.innerWidth + 180
-    ) {
+    if (obj.y > window.innerHeight + 180) {
       removeObject(i);
     }
   }
@@ -196,7 +197,11 @@ function getFixedLanes() {
 function spawnPole() {
   if (gameOver) return;
 
-  const lanes = getFixedLanes();
+  const lanes = [
+    getRoadMin() + 8,
+    getRoadMax() - 8
+  ];
+
   const x = lanes[Math.floor(Math.random() * lanes.length)];
 
   const el = createObject("pole.png", x, -230, 98);
@@ -218,16 +223,12 @@ function spawnPole() {
 function spawnCat() {
   if (gameOver) return;
 
-  const fromRight = Math.random() < 0.5;
+  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
+  const speedX = Math.random() < 0.5 ? -1.2 : 1.2;
 
-  const x = fromRight ? window.innerWidth * 0.72 : window.innerWidth * 0.28;
-  const y = Math.random() * 240 + 150;
+  const el = createObject("cat.png", x, -100, 94);
 
-  const speedX = fromRight ? -4.8 : 4.8;
-
-  const el = createObject("cat.png", x, y, 92);
-
-  if (!fromRight) {
+  if (speedX > 0) {
     el.style.transform = "translateX(-50%) scaleX(-1)";
   }
 
@@ -236,23 +237,23 @@ function spawnCat() {
     kind: "cat",
     type: "damage",
     x,
-    y,
+    y: -100,
     speedX,
-    speedY: 1.3,
+    speedY: 5.3,
     damage: 10,
-    hitX: 44,
-    hitY: 40
+    hitX: 45,
+    hitY: 42,
+    waveOffset: Math.random() * 100
   });
 }
 
 function spawnCrow() {
   if (gameOver) return;
 
-  const lanes = getFixedLanes();
-  const x = lanes[Math.floor(Math.random() * lanes.length)];
-  const diagonal = Math.random() < 0.5 ? -2.1 : 2.1;
+  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
+  const speedX = Math.random() < 0.5 ? -0.8 : 0.8;
 
-  const el = createObject("crow.png", x, -90, 74);
+  const el = createObject("crow.png", x, -90, 78);
 
   objects.push({
     el,
@@ -260,11 +261,11 @@ function spawnCrow() {
     type: "damage",
     x,
     y: -90,
-    speedX: diagonal,
-    speedY: 4.8,
+    speedX,
+    speedY: 5.0,
     damage: 9,
-    hitX: 36,
-    hitY: 36,
+    hitX: 38,
+    hitY: 38,
     waveOffset: Math.random() * 100
   });
 }
