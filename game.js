@@ -5,17 +5,19 @@ const resultScreen = document.getElementById("resultScreen");
 
 const retryButton = document.getElementById("retryButton");
 const player = document.getElementById("player");
-const timerText = document.getElementById("timer");
+const distanceText = document.getElementById("distance");
 const lifeText = document.getElementById("life");
 
 const resultTitle = document.getElementById("resultTitle");
 const resultText = document.getElementById("resultText");
 
 const bgm = new Audio("bgm.mp3");
+
 bgm.loop = false;
 bgm.volume = 0.5;
 
 const GAME_TIME = 60;
+const START_DISTANCE = 600;
 
 let gameStarted = false;
 let gameOver = false;
@@ -38,11 +40,11 @@ function clearAllTimers() {
 }
 
 function getRoadMin() {
-  return window.innerWidth * 0.33;
+  return window.innerWidth * 0.20;
 }
 
 function getRoadMax() {
-  return window.innerWidth * 0.67;
+  return window.innerWidth * 0.80;
 }
 
 function goToRule() {
@@ -63,6 +65,7 @@ function startGame() {
 
   playerX = window.innerWidth / 2;
   targetX = playerX;
+
   life = 100;
   objects = [];
 
@@ -71,16 +74,16 @@ function startGame() {
 
   requestAnimationFrame(gameLoop);
 
-  addTimer(setInterval(spawnPole, 1250));
-  addTimer(setInterval(spawnCat, 2800));
-  addTimer(setInterval(spawnCrow, 2300));
-  addTimer(setInterval(spawnPocari, 5000));
+  addTimer(setInterval(spawnPole, 1180));
+  addTimer(setInterval(spawnCat, 2550));
+  addTimer(setInterval(spawnCrow, 2200));
+  addTimer(setInterval(spawnPocari, 5200));
 }
 
 function gameLoop() {
   if (gameOver) return;
 
-  updateTimer();
+  updateDistance();
   updatePlayer();
   updateObjects();
   updateLife();
@@ -91,18 +94,32 @@ function gameLoop() {
 function updatePlayer() {
   playerX += (targetX - playerX) * 0.14;
 
-  playerX = Math.max(getRoadMin(), Math.min(getRoadMax(), playerX));
+  playerX =
+    Math.max(
+      getRoadMin(),
+      Math.min(getRoadMax(), playerX)
+    );
 
   player.style.left = playerX + "px";
 }
 
-function updateTimer() {
-  const elapsed = Math.floor((Date.now() - startTime) / 1000);
-  const remain = Math.max(0, GAME_TIME - elapsed);
+function updateDistance() {
+  const elapsed =
+    Math.floor((Date.now() - startTime) / 1000);
 
-  timerText.textContent = remain;
+  const remainTime =
+    Math.max(0, GAME_TIME - elapsed);
 
-  if (remain <= 0) {
+  const remainDistance =
+    Math.max(
+      0,
+      Math.ceil((remainTime / GAME_TIME) * START_DISTANCE)
+    );
+
+  distanceText.textContent =
+    "駅まであと " + remainDistance + "m";
+
+  if (remainTime <= 0) {
     endGame(true);
   }
 }
@@ -110,10 +127,13 @@ function updateTimer() {
 function updateLife() {
   life = Math.max(0, Math.min(100, life));
 
-  const bars = Math.ceil(life / 10);
+  const bars =
+    Math.ceil(life / 10);
 
   lifeText.textContent =
-    "LIFE " + "█".repeat(bars) + "░".repeat(10 - bars);
+    "LIFE " +
+    "█".repeat(bars) +
+    "░".repeat(10 - bars);
 
   if (life <= 0) {
     endGame(false);
@@ -128,23 +148,37 @@ function updateObjects() {
     obj.x += obj.speedX;
 
     if (obj.kind === "crow") {
-      obj.x += Math.sin(Date.now() / 170 + obj.waveOffset) * 1.35;
+      obj.x +=
+        Math.sin(Date.now() / 170 + obj.waveOffset) * 1.15;
     }
 
     if (obj.kind === "cat") {
-      obj.x += Math.sin(Date.now() / 220 + obj.waveOffset) * 0.7;
+      obj.x +=
+        Math.sin(Date.now() / 220 + obj.waveOffset) * 0.55;
     }
 
-    obj.x = Math.max(getRoadMin() - 12, Math.min(getRoadMax() + 12, obj.x));
+    obj.x =
+      Math.max(
+        getRoadMin() - 12,
+        Math.min(getRoadMax() + 12, obj.x)
+      );
 
     obj.el.style.left = obj.x + "px";
     obj.el.style.top = obj.y + "px";
 
-    const playerY = window.innerHeight - 98;
-    const dx = playerX - obj.x;
-    const dy = playerY - obj.y;
+    const playerY =
+      window.innerHeight - 98;
 
-    if (Math.abs(dx) < obj.hitX && Math.abs(dy) < obj.hitY) {
+    const dx =
+      playerX - obj.x;
+
+    const dy =
+      playerY - obj.y;
+
+    if (
+      Math.abs(dx) < obj.hitX &&
+      Math.abs(dy) < obj.hitY
+    ) {
       if (obj.type === "heal") {
         life += obj.heal;
         showFloatText("+LIFE", obj.x, obj.y, false);
@@ -169,7 +203,8 @@ function removeObject(index) {
 }
 
 function createObject(src, x, y, width) {
-  const img = document.createElement("img");
+  const img =
+    document.createElement("img");
 
   img.src = src;
   img.className = "object";
@@ -188,9 +223,10 @@ function getFixedLanes() {
   const roadWidth = roadMax - roadMin;
 
   return [
-    roadMin + roadWidth * 0.18,
-    roadMin + roadWidth * 0.50,
-    roadMin + roadWidth * 0.82
+    roadMin + roadWidth * 0.16,
+    roadMin + roadWidth * 0.38,
+    roadMin + roadWidth * 0.62,
+    roadMin + roadWidth * 0.84
   ];
 }
 
@@ -198,13 +234,15 @@ function spawnPole() {
   if (gameOver) return;
 
   const lanes = [
-    getRoadMin() + 8,
-    getRoadMax() - 8
+    getRoadMin() + 12,
+    getRoadMax() - 12
   ];
 
-  const x = lanes[Math.floor(Math.random() * lanes.length)];
+  const x =
+    lanes[Math.floor(Math.random() * lanes.length)];
 
-  const el = createObject("pole.png", x, -230, 98);
+  const el =
+    createObject("pole.png", x, -230, 98);
 
   objects.push({
     el,
@@ -223,13 +261,21 @@ function spawnPole() {
 function spawnCat() {
   if (gameOver) return;
 
-  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
-  const speedX = Math.random() < 0.5 ? -1.2 : 1.2;
+  const lanes =
+    getFixedLanes();
 
-  const el = createObject("cat.png", x, -100, 94);
+  const x =
+    lanes[Math.floor(Math.random() * lanes.length)];
+
+  const speedX =
+    Math.random() < 0.5 ? -0.65 : 0.65;
+
+  const el =
+    createObject("cat.png", x, -100, 94);
 
   if (speedX > 0) {
-    el.style.transform = "translateX(-50%) scaleX(-1)";
+    el.style.transform =
+      "translateX(-50%) scaleX(-1)";
   }
 
   objects.push({
@@ -250,10 +296,17 @@ function spawnCat() {
 function spawnCrow() {
   if (gameOver) return;
 
-  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
-  const speedX = Math.random() < 0.5 ? -0.8 : 0.8;
+  const lanes =
+    getFixedLanes();
 
-  const el = createObject("crow.png", x, -90, 78);
+  const x =
+    lanes[Math.floor(Math.random() * lanes.length)];
+
+  const speedX =
+    Math.random() < 0.5 ? -0.55 : 0.55;
+
+  const el =
+    createObject("crow.png", x, -90, 78);
 
   objects.push({
     el,
@@ -273,10 +326,14 @@ function spawnCrow() {
 function spawnPocari() {
   if (gameOver) return;
 
-  const lanes = getFixedLanes();
-  const x = lanes[Math.floor(Math.random() * lanes.length)];
+  const lanes =
+    getFixedLanes();
 
-  const el = createObject("pocari.png", x, -90, 62);
+  const x =
+    lanes[Math.floor(Math.random() * lanes.length)];
+
+  const el =
+    createObject("pocari.png", x, -90, 62);
 
   objects.push({
     el,
@@ -293,10 +350,14 @@ function spawnPocari() {
 }
 
 function showFloatText(text, x, y, damage) {
-  const div = document.createElement("div");
+  const div =
+    document.createElement("div");
 
   div.className = "float-text";
-  if (damage) div.classList.add("damage-text");
+
+  if (damage) {
+    div.classList.add("damage-text");
+  }
 
   div.textContent = text;
   div.style.left = x + "px";
@@ -313,6 +374,7 @@ function endGame(clear) {
   if (gameOver) return;
 
   gameOver = true;
+
   clearAllTimers();
 
   bgm.pause();
@@ -336,13 +398,18 @@ window.addEventListener("mousemove", e => {
   targetX = e.clientX;
 });
 
-window.addEventListener("touchmove", e => {
-  if (e.touches.length > 0) {
-    targetX = e.touches[0].clientX;
-  }
-}, { passive: true });
+window.addEventListener(
+  "touchmove",
+  e => {
+    if (e.touches.length > 0) {
+      targetX = e.touches[0].clientX;
+    }
+  },
+  { passive: true }
+);
 
 titleScreen.addEventListener("click", goToRule, { once: true });
+
 ruleScreen.addEventListener("click", startGame, { once: true });
 
 retryButton.addEventListener("click", () => {
