@@ -69,6 +69,9 @@ function startGame() {
   life = 100;
   objects = [];
 
+  distanceText.textContent = "駅まで " + START_DISTANCE + "m";
+  updateLife();
+
   bgm.currentTime = 0;
   bgm.play().catch(() => {});
 
@@ -77,6 +80,7 @@ function startGame() {
   addTimer(setInterval(spawnPole, 1180));
   addTimer(setInterval(spawnCat, 2550));
   addTimer(setInterval(spawnCrow, 2200));
+  addTimer(setInterval(spawnTrash, 3200));
   addTimer(setInterval(spawnPocari, 5200));
 }
 
@@ -117,7 +121,7 @@ function updateDistance() {
     );
 
   distanceText.textContent =
-    "駅まであと " + remainDistance + "m";
+    "駅まで " + remainDistance + "m";
 
   if (remainTime <= 0) {
     endGame(true);
@@ -167,7 +171,7 @@ function updateObjects() {
     obj.el.style.top = obj.y + "px";
 
     const playerY =
-      window.innerHeight - 98;
+      window.innerHeight - 128;
 
     const dx =
       playerX - obj.x;
@@ -181,10 +185,10 @@ function updateObjects() {
     ) {
       if (obj.type === "heal") {
         life += obj.heal;
-        showFloatText("+LIFE", obj.x, obj.y, false);
+        showFloatText("回復！", obj.x, obj.y, false);
       } else {
         life -= obj.damage;
-        showFloatText("-" + obj.damage, obj.x, obj.y, true);
+        showFloatText("いたっ！", obj.x, obj.y, true);
       }
 
       removeObject(i);
@@ -320,6 +324,34 @@ function spawnCrow() {
     hitX: 38,
     hitY: 38,
     waveOffset: Math.random() * 100
+  });
+}
+
+function spawnTrash() {
+  if (gameOver) return;
+
+  const side =
+    Math.random() < 0.5 ? "left" : "right";
+
+  const x =
+    side === "left"
+      ? getRoadMin() + 34
+      : getRoadMax() - 34;
+
+  const el =
+    createObject("trash.png", x, -120, 74);
+
+  objects.push({
+    el,
+    kind: "trash",
+    type: "damage",
+    x,
+    y: -120,
+    speedX: 0,
+    speedY: 5.8,
+    damage: 8,
+    hitX: 34,
+    hitY: 40
   });
 }
 
