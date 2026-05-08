@@ -15,7 +15,6 @@ const bgm = new Audio("bgm.mp3");
 bgm.loop = false;
 bgm.volume = 0.5;
 
-/* 120秒は長く感じたため、まずは60秒版 */
 const GAME_TIME = 60;
 
 let gameStarted = false;
@@ -27,11 +26,6 @@ let targetX = playerX;
 
 let life = 100;
 let objects = [];
-
-/* ふらつき強め */
-let driftPower = 2.65;
-let driftDirection = 1;
-
 let timers = [];
 
 function addTimer(id) {
@@ -95,14 +89,8 @@ function gameLoop() {
 }
 
 function updatePlayer() {
-  playerX += driftPower * driftDirection;
-
-  if (Math.random() < 0.032) {
-    driftDirection *= -1;
-  }
-
-  /* 操作追従を弱めて、酔っぱらい感を強化 */
-  playerX += (targetX - playerX) * 0.045;
+  // 操作は素直に追従。見た目のフラつきはCSSで表現。
+  playerX += (targetX - playerX) * 0.14;
 
   playerX = Math.max(getRoadMin(), Math.min(getRoadMax(), playerX));
 
@@ -147,7 +135,7 @@ function updateObjects() {
     obj.el.style.left = obj.x + "px";
     obj.el.style.top = obj.y + "px";
 
-    const playerY = window.innerHeight - 100;
+    const playerY = window.innerHeight - 98;
     const dx = playerX - obj.x;
     const dy = playerY - obj.y;
 
@@ -193,16 +181,22 @@ function createObject(src, x, y, width) {
   return img;
 }
 
+function getFixedLanes() {
+  const roadMin = getRoadMin();
+  const roadMax = getRoadMax();
+  const roadWidth = roadMax - roadMin;
+
+  return [
+    roadMin + roadWidth * 0.18,
+    roadMin + roadWidth * 0.50,
+    roadMin + roadWidth * 0.82
+  ];
+}
+
 function spawnPole() {
   if (gameOver) return;
 
-  /* 道幅中央1/3の中に出す */
-  const lanes = [
-    window.innerWidth * 0.38,
-    window.innerWidth * 0.50,
-    window.innerWidth * 0.62
-  ];
-
+  const lanes = getFixedLanes();
   const x = lanes[Math.floor(Math.random() * lanes.length)];
 
   const el = createObject("pole.png", x, -230, 98);
@@ -231,7 +225,7 @@ function spawnCat() {
 
   const speedX = fromRight ? -4.8 : 4.8;
 
-  const el = createObject("cat.png", x, y, 70);
+  const el = createObject("cat.png", x, y, 92);
 
   if (!fromRight) {
     el.style.transform = "translateX(-50%) scaleX(-1)";
@@ -246,15 +240,16 @@ function spawnCat() {
     speedX,
     speedY: 1.3,
     damage: 10,
-    hitX: 36,
-    hitY: 32
+    hitX: 44,
+    hitY: 40
   });
 }
 
 function spawnCrow() {
   if (gameOver) return;
 
-  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
+  const lanes = getFixedLanes();
+  const x = lanes[Math.floor(Math.random() * lanes.length)];
   const diagonal = Math.random() < 0.5 ? -2.1 : 2.1;
 
   const el = createObject("crow.png", x, -90, 74);
@@ -277,7 +272,8 @@ function spawnCrow() {
 function spawnPocari() {
   if (gameOver) return;
 
-  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
+  const lanes = getFixedLanes();
+  const x = lanes[Math.floor(Math.random() * lanes.length)];
 
   const el = createObject("pocari.png", x, -90, 62);
 
