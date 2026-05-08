@@ -16,6 +16,23 @@ const bgm = new Audio("bgm.mp3");
 bgm.loop = false;
 bgm.volume = 0.5;
 
+const seStart = new Audio("start.mp3");
+const seHit = new Audio("hit.mp3");
+const seHeal = new Audio("heal.mp3");
+const seClear = new Audio("clear.mp3");
+const seGameover = new Audio("gameover.mp3");
+
+seStart.volume = 0.8;
+seHit.volume = 0.9;
+seHeal.volume = 0.9;
+seClear.volume = 0.9;
+seGameover.volume = 0.9;
+
+function playSE(se) {
+  se.currentTime = 0;
+  se.play().catch(() => {});
+}
+
 const GAME_TIME = 60;
 const START_DISTANCE = 600;
 
@@ -48,12 +65,16 @@ function getRoadMax() {
 }
 
 function goToRule() {
+  playSE(seStart);
+
   titleScreen.classList.add("hidden");
   ruleScreen.classList.remove("hidden");
 }
 
 function startGame() {
   if (gameStarted) return;
+
+  playSE(seStart);
 
   gameStarted = true;
   gameOver = false;
@@ -70,6 +91,7 @@ function startGame() {
   objects = [];
 
   distanceText.textContent = "駅まで " + START_DISTANCE + "m";
+
   updateLife();
 
   bgm.currentTime = 0;
@@ -184,11 +206,27 @@ function updateObjects() {
       Math.abs(dy) < obj.hitY
     ) {
       if (obj.type === "heal") {
+        playSE(seHeal);
+
         life += obj.heal;
-        showFloatText("回復！", obj.x, obj.y, false);
+
+        showFloatText(
+          "回復！",
+          obj.x,
+          obj.y,
+          false
+        );
       } else {
+        playSE(seHit);
+
         life -= obj.damage;
-        showFloatText("いたっ！", obj.x, obj.y, true);
+
+        showFloatText(
+          "いたっ！",
+          obj.x,
+          obj.y,
+          true
+        );
       }
 
       removeObject(i);
@@ -418,9 +456,13 @@ function endGame(clear) {
   resultScreen.classList.remove("hidden");
 
   if (clear) {
+    playSE(seClear);
+
     resultTitle.textContent = "無事生還！";
     resultText.innerHTML = "駅まで帰れた…";
   } else {
+    playSE(seGameover);
+
     resultTitle.textContent = "路上エンド…";
     resultText.innerHTML = "のみすぎ注意";
   }
@@ -445,5 +487,9 @@ titleScreen.addEventListener("click", goToRule, { once: true });
 ruleScreen.addEventListener("click", startGame, { once: true });
 
 retryButton.addEventListener("click", () => {
-  location.reload();
+  playSE(seStart);
+
+  setTimeout(() => {
+    location.reload();
+  }, 120);
 });
