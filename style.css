@@ -47,13 +47,8 @@ body {
 }
 
 @keyframes blink {
-  0%, 55% {
-    opacity: 1;
-  }
-
-  56%, 100% {
-    opacity: 0.25;
-  }
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0.25; }
 }
 
 /* RULE */
@@ -114,54 +109,81 @@ body {
 
 /* GAME */
 #gameScreen {
-  background: #0b1020;
+  background: #071022;
 }
 
+/* 夜道 */
 #road {
   position: absolute;
   inset: 0;
   height: 200%;
+
   background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 66px,
+      rgba(255,255,255,0.06) 66px,
+      rgba(255,255,255,0.06) 70px,
+      transparent 70px,
+      transparent 132px
+    ),
     linear-gradient(
       to right,
-      #111b2f 0%,
-      #111b2f 18%,
-      #1b2433 18%,
-      #1b2433 82%,
-      #111b2f 82%,
-      #111b2f 100%
+      #071022 0%,
+      #071022 30%,
+      #405878 30%,
+      #405878 31%,
+      #1b2638 31%,
+      #1b2638 69%,
+      #405878 69%,
+      #405878 70%,
+      #071022 70%,
+      #071022 100%
     );
-  animation: roadScroll 0.55s linear infinite;
+
+  animation: roadScroll 0.36s linear infinite;
 }
 
+/* 道路中央の破線 */
 #road::before {
   content: "";
   position: absolute;
-  left: 18%;
+  left: 50%;
   top: 0;
-  width: 4px;
+  width: 8px;
   height: 100%;
-  background: #31486a;
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #ffe071 0px,
+      #ffe071 34px,
+      transparent 34px,
+      transparent 78px
+    );
+  opacity: 0.75;
 }
 
+/* 遠近感っぽい横線 */
 #road::after {
   content: "";
   position: absolute;
-  left: 82%;
-  top: 0;
-  width: 4px;
-  height: 100%;
-  background: #31486a;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 2px,
+      transparent 2px,
+      transparent 26px
+    );
+  pointer-events: none;
 }
 
 @keyframes roadScroll {
-  from {
-    transform: translateY(-120px);
-  }
-
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(-132px); }
+  to { transform: translateY(0); }
 }
 
 .top-ui {
@@ -179,23 +201,18 @@ body {
 
 #player {
   position: absolute;
-  bottom: 58px;
+  bottom: 54px;
   left: 50%;
-  width: 86px;
+  width: 88px;
   transform: translateX(-50%);
   image-rendering: pixelated;
   z-index: 20;
-  animation: wobble 0.7s ease-in-out infinite alternate;
+  animation: wobble 0.55s ease-in-out infinite alternate;
 }
 
 @keyframes wobble {
-  from {
-    transform: translateX(-50%) rotate(-4deg);
-  }
-
-  to {
-    transform: translateX(-50%) rotate(4deg);
-  }
+  from { transform: translateX(-50%) rotate(-6deg); }
+  to { transform: translateX(-50%) rotate(6deg); }
 }
 
 .object {

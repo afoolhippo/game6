@@ -15,7 +15,8 @@ const bgm = new Audio("bgm.mp3");
 bgm.loop = false;
 bgm.volume = 0.5;
 
-const GAME_TIME = 120;
+/* 120秒は長く感じたため、まずは60秒版 */
+const GAME_TIME = 60;
 
 let gameStarted = false;
 let gameOver = false;
@@ -27,7 +28,8 @@ let targetX = playerX;
 let life = 100;
 let objects = [];
 
-let driftPower = 1.55;
+/* ふらつき強め */
+let driftPower = 2.65;
 let driftDirection = 1;
 
 let timers = [];
@@ -39,6 +41,14 @@ function addTimer(id) {
 function clearAllTimers() {
   timers.forEach(clearInterval);
   timers = [];
+}
+
+function getRoadMin() {
+  return window.innerWidth * 0.33;
+}
+
+function getRoadMax() {
+  return window.innerWidth * 0.67;
 }
 
 function goToRule() {
@@ -57,15 +67,20 @@ function startGame() {
 
   startTime = Date.now();
 
+  playerX = window.innerWidth / 2;
+  targetX = playerX;
+  life = 100;
+  objects = [];
+
   bgm.currentTime = 0;
   bgm.play().catch(() => {});
 
   requestAnimationFrame(gameLoop);
 
-  addTimer(setInterval(spawnPole, 1700));
-  addTimer(setInterval(spawnCat, 3200));
-  addTimer(setInterval(spawnCrow, 2600));
-  addTimer(setInterval(spawnPocari, 5600));
+  addTimer(setInterval(spawnPole, 1250));
+  addTimer(setInterval(spawnCat, 2800));
+  addTimer(setInterval(spawnCrow, 2300));
+  addTimer(setInterval(spawnPocari, 5000));
 }
 
 function gameLoop() {
@@ -82,13 +97,14 @@ function gameLoop() {
 function updatePlayer() {
   playerX += driftPower * driftDirection;
 
-  if (Math.random() < 0.022) {
+  if (Math.random() < 0.032) {
     driftDirection *= -1;
   }
 
-  playerX += (targetX - playerX) * 0.09;
+  /* 操作追従を弱めて、酔っぱらい感を強化 */
+  playerX += (targetX - playerX) * 0.045;
 
-  playerX = Math.max(44, Math.min(window.innerWidth - 44, playerX));
+  playerX = Math.max(getRoadMin(), Math.min(getRoadMax(), playerX));
 
   player.style.left = playerX + "px";
 }
@@ -125,13 +141,13 @@ function updateObjects() {
     obj.x += obj.speedX;
 
     if (obj.kind === "crow") {
-      obj.x += Math.sin(Date.now() / 180 + obj.waveOffset) * 1.2;
+      obj.x += Math.sin(Date.now() / 170 + obj.waveOffset) * 1.35;
     }
 
     obj.el.style.left = obj.x + "px";
     obj.el.style.top = obj.y + "px";
 
-    const playerY = window.innerHeight - 105;
+    const playerY = window.innerHeight - 100;
     const dx = playerX - obj.x;
     const dy = playerY - obj.y;
 
@@ -180,14 +196,16 @@ function createObject(src, x, y, width) {
 function spawnPole() {
   if (gameOver) return;
 
+  /* 道幅中央1/3の中に出す */
   const lanes = [
-    window.innerWidth * 0.16,
-    window.innerWidth * 0.84
+    window.innerWidth * 0.38,
+    window.innerWidth * 0.50,
+    window.innerWidth * 0.62
   ];
 
   const x = lanes[Math.floor(Math.random() * lanes.length)];
 
-  const el = createObject("pole.png", x, -230, 92);
+  const el = createObject("pole.png", x, -230, 98);
 
   objects.push({
     el,
@@ -196,10 +214,10 @@ function spawnPole() {
     x,
     y: -230,
     speedX: 0,
-    speedY: 6.2,
-    damage: 18,
-    hitX: 38,
-    hitY: 80
+    speedY: 6.8,
+    damage: 20,
+    hitX: 44,
+    hitY: 88
   });
 }
 
@@ -208,12 +226,12 @@ function spawnCat() {
 
   const fromRight = Math.random() < 0.5;
 
-  const x = fromRight ? window.innerWidth + 70 : -70;
-  const y = Math.random() * 260 + 130;
+  const x = fromRight ? window.innerWidth * 0.72 : window.innerWidth * 0.28;
+  const y = Math.random() * 240 + 150;
 
-  const speedX = fromRight ? -4.3 : 4.3;
+  const speedX = fromRight ? -4.8 : 4.8;
 
-  const el = createObject("cat.png", x, y, 66);
+  const el = createObject("cat.png", x, y, 70);
 
   if (!fromRight) {
     el.style.transform = "translateX(-50%) scaleX(-1)";
@@ -226,20 +244,20 @@ function spawnCat() {
     x,
     y,
     speedX,
-    speedY: 1.2,
-    damage: 9,
-    hitX: 34,
-    hitY: 30
+    speedY: 1.3,
+    damage: 10,
+    hitX: 36,
+    hitY: 32
   });
 }
 
 function spawnCrow() {
   if (gameOver) return;
 
-  const x = Math.random() * (window.innerWidth - 100) + 50;
-  const diagonal = Math.random() < 0.5 ? -1.8 : 1.8;
+  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
+  const diagonal = Math.random() < 0.5 ? -2.1 : 2.1;
 
-  const el = createObject("crow.png", x, -90, 70);
+  const el = createObject("crow.png", x, -90, 74);
 
   objects.push({
     el,
@@ -248,10 +266,10 @@ function spawnCrow() {
     x,
     y: -90,
     speedX: diagonal,
-    speedY: 4.3,
-    damage: 8,
-    hitX: 34,
-    hitY: 34,
+    speedY: 4.8,
+    damage: 9,
+    hitX: 36,
+    hitY: 36,
     waveOffset: Math.random() * 100
   });
 }
@@ -259,9 +277,9 @@ function spawnCrow() {
 function spawnPocari() {
   if (gameOver) return;
 
-  const x = Math.random() * (window.innerWidth - 120) + 60;
+  const x = Math.random() * (getRoadMax() - getRoadMin()) + getRoadMin();
 
-  const el = createObject("pocari.png", x, -90, 60);
+  const el = createObject("pocari.png", x, -90, 62);
 
   objects.push({
     el,
@@ -270,10 +288,10 @@ function spawnPocari() {
     x,
     y: -90,
     speedX: 0,
-    speedY: 3.9,
+    speedY: 4.2,
     heal: 22,
-    hitX: 34,
-    hitY: 40
+    hitX: 36,
+    hitY: 42
   });
 }
 
@@ -310,7 +328,7 @@ function endGame(clear) {
 
   if (clear) {
     resultTitle.textContent = "無事生還！";
-    resultText.innerHTML = "終電に間に合った…";
+    resultText.innerHTML = "駅まで帰れた…";
   } else {
     resultTitle.textContent = "路上エンド…";
     resultText.innerHTML = "のみすぎ注意";
