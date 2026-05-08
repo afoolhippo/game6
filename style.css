@@ -1,0 +1,52 @@
+body {
+.object {
+  position: absolute;
+  image-rendering: pixelated;
+  z-index: 9;
+}
+
+/* RESULT */
+#resultScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#resultStation img {
+  width: min(80vw, 520px);
+  image-rendering: pixelated;
+}
+
+#resultTitle {
+  margin-top: 26px;
+  color: #ffe07a;
+  font-size: 42px;
+}
+
+#resultText {
+  margin-top: 14px;
+  color: white;
+  font-size: 22px;
+  line-height: 1.7;
+}
+
+#retryButton {
+  margin-top: 32px;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 16px 30px;
+
+  background: #ffe07a;
+  color: #0f1626;
+
+  font-family: inherit;
+  font-size: 22px;
+}
