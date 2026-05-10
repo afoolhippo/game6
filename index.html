@@ -10,75 +10,83 @@
 </head>
 <body>
 
+  <!-- TITLE -->
+
   <div id="titleScreen" class="screen">
+
     <img src="title.png" alt="二日酔いロード" class="title-image">
-    <div class="start-text">PRESS START BUTTON</div>
-  </div>
 
-  <div id="ruleScreen" class="screen hidden">
-    <h2>HOW TO PLAY</h2>
+    <div class="title-desc">
+      飲み過ぎたサラリーマンを<br>
+      家まで帰宅させよう！<br><br>
 
-    <div class="rule-main">
-      <p class="rule-catch">駅までたどりつけ！</p>
-
-      <p>
-        電柱、猫、カラス、ゴミ箱をよけながら<br>
-        よるのみちをあるこう。
-      </p>
-
-      <p>
-        ポカリでライフ回復！
-      </p>
-
-      <p class="rule-time">
-        プレイ時間：約1分
-      </p>
+      電柱・猫・カラスに注意！<br>
+      ポカリで体力回復！
     </div>
 
-    <div class="rule-icons">
-      <div>
-        <img src="pole.png" alt="">
-        <span>電柱</span>
-      </div>
-      <div>
-        <img src="cat.png" alt="">
-        <span>猫</span>
-      </div>
-      <div>
-        <img src="crow.png" alt="">
-        <span>カラス</span>
-      </div>
-      <div>
-        <img src="trash.png" alt="">
-        <span>ゴミ箱</span>
-      </div>
-      <div>
-        <img src="pocari.png" alt="">
-        <span>ポカリ</span>
-      </div>
+    <div class="start-text">
+      タップしてスタート
     </div>
 
-    <div class="start-text">TAP TO START</div>
   </div>
+
+  <!-- GAME -->
 
   <div id="gameScreen" class="screen hidden">
+
     <div id="road"></div>
+
+    <button id="backButton">
+      タイトルへ
+    </button>
 
     <img id="player" src="drunk.png" alt="">
 
     <div class="bottom-ui">
       <div id="life">LIFE ██████████</div>
-      <div id="distance">駅まで 600m</div>
+      <div id="distance">家まで 600m</div>
     </div>
+
   </div>
 
-  <div id="resultScreen" class="screen hidden">
-    <div id="resultTitle">無事生還！</div>
-    <div id="resultText">駅まで帰れた…</div>
+  <!-- RESULT -->
 
-    <button id="retryButton">もういっかい！</button>
+  <div id="resultScreen" class="screen hidden">
+
+    <img id="resultCharacter" src="" alt="">
+
+    <div id="resultTitle">
+      奇跡の生還
+    </div>
+
+    <div id="resultText">
+      のみすぎ注意！
+    </div>
+
+    <div id="resultStats"></div>
+
+    <div class="result-buttons">
+
+      <button id="shareButton">
+        Xでシェア
+      </button>
+
+      <button id="retryButton">
+        もう1回遊ぶ
+      </button>
+
+      <button
+        id="homeButton"
+        onclick="location.href='https://afoolhippo.github.io/home/?skipTitle=1'"
+      >
+        カバゲーセンへ
+      </button>
+
+    </div>
+
   </div>
 
   <script src="game.js"></script>
+
 </body>
 </html>
